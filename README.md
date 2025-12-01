@@ -2,6 +2,23 @@
 
 Nix flake for [SpacetimeDB](https://spacetimedb.com) - a database that runs anywhere.
 
+## Important Note
+
+SpacetimeDB has an unfree license. You have two options:
+
+1. **Allow unfree in your flake** (recommended):
+   ```nix
+   pkgs = import nixpkgs {
+     inherit system;
+     config.allowUnfree = true;
+   };
+   ```
+
+2. **Use environment variable** (for one-off commands):
+   ```bash
+   NIXPKGS_ALLOW_UNFREE=1 nix run github:krisajenkins/spacetimedb-nix --impure
+   ```
+
 ## Usage
 
 ### Method 1: Direct flake reference (recommended)
@@ -12,7 +29,7 @@ Add to your `flake.nix`:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    spacetimedb.url = "github:kjenkins/spacetimedb-nix";
+    spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
   };
 
   outputs = { self, nixpkgs, spacetimedb, ... }:
@@ -36,7 +53,7 @@ Add to your `flake.nix`:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    spacetimedb.url = "github:kjenkins/spacetimedb-nix";
+    spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
   };
 
   outputs = { self, nixpkgs, spacetimedb, ... }:
@@ -58,14 +75,14 @@ Add to your `flake.nix`:
 ### Method 3: One-off usage
 
 ```bash
-nix shell github:kjenkins/spacetimedb-nix
+NIXPKGS_ALLOW_UNFREE=1 nix shell github:krisajenkins/spacetimedb-nix --impure
 spacetime --version
 ```
 
 ### Method 4: Run without installing
 
 ```bash
-nix run github:kjenkins/spacetimedb-nix -- --version
+NIXPKGS_ALLOW_UNFREE=1 nix run github:krisajenkins/spacetimedb-nix --impure -- --version
 ```
 
 ## Supported Platforms
