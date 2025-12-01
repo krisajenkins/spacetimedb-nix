@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "SpacetimeDB CLI - a database that runs anywhere";
     homepage = "https://spacetimedb.com";
-    license = licenses.unfree;
+    license = licenses.bsl11; # Converts to AGPL-3.0 after 4 years
     sourceProvenance = [ sourceTypes.binaryNativeCode ];
     platforms = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
     mainProgram = "spacetime";

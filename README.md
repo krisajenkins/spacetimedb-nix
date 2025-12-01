@@ -2,28 +2,18 @@
 
 Nix flake for [SpacetimeDB](https://spacetimedb.com) - a database that runs anywhere.
 
-## Important Note
+## Important: Unfree License
 
-SpacetimeDB has an unfree license. You have two options:
+SpacetimeDB has an unfree license (BSL 1.1). How you handle this depends on which method you use:
 
-1. **Allow unfree in your flake** (recommended):
-   ```nix
-   pkgs = import nixpkgs {
-     inherit system;
-     config.allowUnfree = true;
-   };
-   ```
-
-2. **Use environment variable** (for one-off commands):
-   ```bash
-   NIXPKGS_ALLOW_UNFREE=1 nix run github:krisajenkins/spacetimedb-nix --impure
-   ```
+- **Overlay method**: Set `config.allowUnfree = true` in your nixpkgs import
+- **Direct package reference**: Requires `NIXPKGS_ALLOW_UNFREE=1` and `--impure`
 
 ## Usage
 
-### Method 1: Direct flake reference (recommended)
+### Method 1: Using the overlay (recommended)
 
-Add to your `flake.nix`:
+The overlay integrates with your nixpkgs config, so `allowUnfree = true` works:
 
 ```nix
 {
@@ -35,6 +25,38 @@ Add to your `flake.nix`:
   outputs = { self, nixpkgs, spacetimedb, ... }:
     let
       system = "x86_64-linux"; # or aarch64-darwin, etc.
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = [ spacetimedb.overlays.default ];
+      };
+    in
+    {
+      devShells.default = pkgs.mkShell {
+        buildInputs = [ pkgs.spacetimedb ];
+      };
+    };
+}
+```
+
+### Method 2: Direct package reference
+
+This method requires `--impure` because the package is evaluated with this flake's nixpkgs, not yours:
+
+```bash
+NIXPKGS_ALLOW_UNFREE=1 nix develop --impure
+```
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
+  };
+
+  outputs = { self, nixpkgs, spacetimedb, ... }:
+    let
+      system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
     in
     {
@@ -47,32 +69,7 @@ Add to your `flake.nix`:
 }
 ```
 
-### Method 2: Using the overlay
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
-  };
-
-  outputs = { self, nixpkgs, spacetimedb, ... }:
-    let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ spacetimedb.overlays.default ];
-      };
-    in
-    {
-      devShells.default = pkgs.mkShell {
-        buildInputs = [ pkgs.spacetimedb ];
-      };
-    };
-}
-```
-
-### Method 3: One-off usage
+### Method 3: One-off shell
 
 ```bash
 NIXPKGS_ALLOW_UNFREE=1 nix shell github:krisajenkins/spacetimedb-nix --impure
@@ -105,4 +102,4 @@ To update to a new SpacetimeDB version:
 
 ## License
 
-SpacetimeDB is proprietary software. This Nix package is provided as-is for convenience.
+SpacetimeDB uses the Business Source License 1.1 (BSL 1.1), which converts to AGPL-3.0 after 4 years. This Nix package is provided as-is for convenience.
