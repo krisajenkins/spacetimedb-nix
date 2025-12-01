@@ -18,7 +18,7 @@ The overlay integrates with your nixpkgs config, so `allowUnfree = true` works:
 ```nix
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/25.11";
     spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
   };
 
@@ -50,7 +50,7 @@ NIXPKGS_ALLOW_UNFREE=1 nix develop --impure
 ```nix
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/25.11";
     spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
   };
 
