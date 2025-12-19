@@ -19,23 +19,29 @@ The overlay integrates with your nixpkgs config, so `allowUnfree = true` works:
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/25.11";
+    flake-utils.url = "github:numtide/flake-utils";
     spacetimedb.url = "github:krisajenkins/spacetimedb-nix";
   };
 
-  outputs = { self, nixpkgs, spacetimedb, ... }:
-    let
-      system = "x86_64-linux"; # or aarch64-darwin, etc.
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = [ spacetimedb.overlays.default ];
-      };
-    in
-    {
-      devShells.default = pkgs.mkShell {
-        buildInputs = [ pkgs.spacetimedb ];
-      };
-    };
+  outputs = { self, nixpkgs, flake-utils, spacetimedb }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [ spacetimedb.overlays.default ];
+        };
+
+      in
+      {
+        packages = { };
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.spacetimedb
+          ];
+        };
+      });
 }
 ```
 
@@ -94,8 +100,8 @@ NIXPKGS_ALLOW_UNFREE=1 nix run github:krisajenkins/spacetimedb-nix --impure -- -
 To update to a new SpacetimeDB version:
 
 1. Update `version` in `data.nix`
-2. Update URLs in `spacetimedbPkgs`
-3. Update sha256 hashes:
+1. Update URLs in `spacetimedbPkgs`
+1. Update sha256 hashes:
    ```bash
    nix-prefetch-url <url>
    ```
