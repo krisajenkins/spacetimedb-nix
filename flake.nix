@@ -2,7 +2,7 @@
   description = "SpacetimeDB - a database that runs anywhere";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/26.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
